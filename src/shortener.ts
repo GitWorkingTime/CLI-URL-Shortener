@@ -1,5 +1,5 @@
 import dotenv from 'dotenv'
-dotenv.config();
+dotenv.config({quiet: true});
 
 const token = process.env.TINYURL;
 if (token == undefined) {
@@ -41,8 +41,7 @@ function isTinyUrlSuccess(body: unknown): body is TinyUrlSuccess {
   return true;
 }
 
-
-async function shortenURL(url: string): Promise<string>{
+export async function shortenURL(url: string): Promise<string>{
     const res = await fetch(`https://api.tinyurl.com/create`, {
         method: 'POST',
         headers: {
