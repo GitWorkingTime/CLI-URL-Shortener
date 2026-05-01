@@ -1,0 +1,25 @@
+{
+  "name": "cli-url-shortener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GitWorkingTime/CLI-URL-Shortener.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/GitWorkingTime/CLI-URL-Shortener/issues"
+  },
+  "homepage": "https://github.com/GitWorkingTime/CLI-URL-Shortener#readme",
+  "dependencies": {
+    "commander": "^14.0.3",
+    "typescript": "^6.0.3"
+  }
+}
