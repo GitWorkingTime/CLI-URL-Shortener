@@ -26,12 +26,15 @@ updateList();
 
 program
     .name('URL Shortener')
-    .description('A URL Shortener CLI')
+    .description('A CLI for shortening URLs using TinyURL API, with local history.')
     .version('1.0.0');
 
 program
-    .command('shorten <url>')
-    .description('Takes in a URL to shorten and save to history')
+    .command('shorten')
+    .summary('shortnens a URL')
+    .description('Shorten a URL via TinyURL and saves it to a local history. If the URL\nhas already been shortened, returns the existing entry instead of making\na new URL.')
+    .argument('<url>', 'the URL to shorten')
+    .addHelpText('after', '\nExample:\nnpm start -- shorten http://example.com\nTiny Url: https://tinyur1.com/abc123\n')
     .action(async (url: string) => {
         try {
             if(urlHash.get(url) === undefined ) {
@@ -50,7 +53,8 @@ program
 
 program
     .command('list')
-    .description('Outputs a list of shortened URLs')
+    .summary('Lists all shortened URLs')
+    .description('Displays all shortened URLs from local history indexed with their IDs')
     .action(async () => {
         if (urlHash.size === 0) {
             console.log('No URLs are shortened. Try using the shorten <url> command to add urls');
@@ -62,8 +66,11 @@ program
     })
 
 program
-    .command('delete <id>')
-    .description('Removes a shortened URL given an ID number')
+    .command('delete')
+    .summary('Removes a shortened URL from local history')
+    .description('Removes a shortened URL via an ID number')
+    .argument('<id>', 'the associated ID number with a shortened url, as seen via the list command')
+    .addHelpText('after', '\nExample:\nnpm start -- delete 1\nThis url (http://example.com) and it\'s associated shortened url is now removed\n')
     .action(async (idStr: string) => {
         const id = parseInt(idStr, 10);
         let url = urlID.get(id);
