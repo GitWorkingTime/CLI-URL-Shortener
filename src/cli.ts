@@ -80,6 +80,7 @@ program
     .description('Clears all data')
     .action(async () => {
         db.resetTable();
+        console.log('All data has been cleared!');
     })
 
 program.parse();
