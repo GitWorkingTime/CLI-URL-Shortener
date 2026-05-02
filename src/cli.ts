@@ -37,7 +37,6 @@ program
             if(urlHash.get(url) === undefined ) {
                 let compressed = await shortenURL(url);
                 db.insertData(url, compressed);
-                updateList();
                 console.log(`Tiny URL: ${compressed}`);
             } else {
                 console.log(`Tiny URL: ${urlHash.get(url)?.shortened}`);
@@ -72,9 +71,15 @@ program
             console.log(`ID does not exist! Use list to find your urls`);
         } else {
             db.deleteRow(id);
-            updateList();
             console.log(`This url (${url}) and it's associated shortened url is now removed`);
         }
+    })
+
+program
+    .command('reset')
+    .description('Clears all data')
+    .action(async () => {
+        db.resetTable();
     })
 
 program.parse();
