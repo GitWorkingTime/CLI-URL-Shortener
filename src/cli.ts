@@ -1,15 +1,28 @@
 import {Command} from 'commander'
 import { shortenURL } from './shortener.js';
+import * as db from './db.js'
 
 const program = new Command();
 
-interface urlPairs {
-    url: string,
-    tinyUrl: string,
-    id: number
+let urlHash: Map<string, {shortened: string, id: number}> = new Map();
+let urlID: Map<number, string> = new Map();
+
+function updateList(): void;
+function updateList() {
+    let urls = db.fetchAll();
+    if (urls !== undefined) {
+        urls.forEach((url) => {
+            if (url !== undefined) {
+                if (urlHash.get(url.url) === undefined) {
+                    urlHash.set(url.url, {shortened: url.shortened, id: url.id});
+                    urlID.set(url.id, url.url);
+                }
+            }
+        })
+    }
 }
 
-let urlList: urlPairs[] = [];
+updateList();
 
 program
     .name('URL Shortener')
@@ -21,20 +34,13 @@ program
     .description('Takes in a URL to shorten and save to history')
     .action(async (url: string) => {
         try {
-            let urlExists = false;
-            for (let i = 0; i < urlList.length; ++i) {
-                if (url === urlList[i]?.url) {
-                    console.log(`Shortened URL: ${urlList[i]?.tinyUrl}`);
-                    urlExists = true;
-                    break;
-                }
-            }
-
-            if (!urlExists) {
-                const result = await shortenURL(url);
-                let urlPair: urlPairs = {url: url, tinyUrl: result, id: (urlList.length + 1)};
-                urlList.push(urlPair);
-                console.log(`Shortened URL: ${result}`);
+            if(urlHash.get(url) === undefined ) {
+                let compressed = await shortenURL(url);
+                db.insertData(url, compressed);
+                updateList();
+                console.log(`Tiny URL: ${compressed}`);
+            } else {
+                console.log(`Tiny URL: ${urlHash.get(url)?.shortened}`);
             }
 
         } catch (err) {
@@ -42,5 +48,33 @@ program
             process.exit(1);
         }
     });
-    
+
+program
+    .command('list')
+    .description('Outputs a list of shortened URLs')
+    .action(async () => {
+        if (urlHash.size === 0) {
+            console.log('No URLs are shortened. Try using the shorten <url> command to add urls');
+        } else {
+            urlHash.forEach((value, key) => {
+                console.log(`[ID: ${value.id}] | Url: ${key} || Shortened: ${value.shortened}`);
+            })
+        }
+    })
+
+program
+    .command('delete <id>')
+    .description('Removes a shortened URL given an ID number')
+    .action(async (idStr: string) => {
+        const id = parseInt(idStr, 10);
+        let url = urlID.get(id);
+        if (url === undefined) {
+            console.log(`ID does not exist! Use list to find your urls`);
+        } else {
+            db.deleteRow(id);
+            updateList();
+            console.log(`This url (${url}) and it's associated shortened url is now removed`);
+        }
+    })
+
 program.parse();
