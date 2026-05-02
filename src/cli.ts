@@ -42,18 +42,5 @@ program
             process.exit(1);
         }
     });
-
-program
-    .command('list')
-    .description('Outputs a list of URLs shortened')
-    .action(async () => {
-        if (urlList.length <= 0) {
-            console.log('No shortened URLs. Try shortening some')
-        } else {
-            for (let i = 0; i < urlList.length; ++i) {
-                console.log(`URL: ${urlList[i]?.url} | Shortened: ${urlList[i]?.tinyUrl} | ID: ${urlList[i]?.id}`);
-            }
-        }
-    });
     
 program.parse();
